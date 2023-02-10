@@ -1,8 +1,10 @@
 package pub.chara.disablealttab.hook
 
 import android.view.KeyEvent
+import android.view.KeyEvent.*
 import com.github.kyuubiran.ezxhelper.utils.*
 import de.robv.android.xposed.XposedBridge
+
 
 object AltTabHook : BaseHook() {
     override fun init() {
@@ -13,10 +15,11 @@ object AltTabHook : BaseHook() {
                 name == "interceptKeyBeforeDispatching"
             }.hookBefore { param ->
                 run {
-                    val arg1: KeyEvent = param.args[1] as KeyEvent;
-                    // alt-tab
-                    if ((arg1.isAltPressed && arg1.keyCode == 61)) {
-                        param.result = 0L;
+                    val arg1: KeyEvent = param.args[1] as KeyEvent
+                    val kc = arg1.keyCode
+                    // XposedBridge.log("[at]: key pressed: " + KeyEvent.keyCodeToString(kc))
+                    if ((arg1.isAltPressed && kc == KEYCODE_TAB) || arg1.isMetaPressed || kc == KEYCODE_META_LEFT) {
+                        param.result = 0L
                     }
                 }
             }
